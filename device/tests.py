@@ -5,7 +5,7 @@ from django.urls import reverse
 from device.models import Device
 from users.models import User
 
-#Create your tests here.
+
 class DeviceAPITestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
