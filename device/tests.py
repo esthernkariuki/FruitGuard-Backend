@@ -23,7 +23,7 @@ class DeviceAPITestCase(TestCase):
             user_id=self.user
         )
         self.device_url = reverse('device-list') 
-        self.device_detail_url = reverse('device-detail', args=[self.device.device_id])
+       
 
     def test_list_devices(self):
         response = self.client.get(self.device_url)
