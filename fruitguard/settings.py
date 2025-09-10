@@ -25,6 +25,7 @@ SECRET_KEY = 'django-insecure-efs89bla=wix!e3o6&357*--bik3dz7w4#xe93pze3wh=5xsqx
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+
 ALLOWED_HOSTS = []
 
 
@@ -42,8 +43,16 @@ INSTALLED_APPS = [
     'data_monitoring',
     'api',
     'rest_framework',
+    'rest_framework.authtoken',
+
 ]
 
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
