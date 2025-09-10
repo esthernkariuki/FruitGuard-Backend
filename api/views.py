@@ -51,6 +51,8 @@ class LoginView(APIView):
             "email": user.email,
         }, status=status.HTTP_200_OK)
 
+      
+
 class ProfileView(generics.RetrieveAPIView):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]

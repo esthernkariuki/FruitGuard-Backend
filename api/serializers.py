@@ -48,6 +48,7 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "created_at"]
 
     def validate_phone_number(self, value):
+        print(f"phone number !!{value} @@@")
         if not value.isdigit():
             raise serializers.ValidationError("Phone number must contain digits only.")
         if len(value) < 10 or len(value) > 15:
