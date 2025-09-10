@@ -1,4 +1,3 @@
-from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
@@ -31,14 +30,15 @@ class UserAuthTests(APITestCase):
             phone_number=self.user_data["phone_number"],
             email=self.user_data["email"],
             password=self.user_data["password"],
-            first_name="Elizabeth",
-            last_name="Barongo",
-            user_type="agrovet",
+            first_name=self.user_data["first_name"],
+            last_name=self.user_data["last_name"],
+            user_type=self.user_data["user_type"],
         )
         response = self.client.post(self.login_url, {
-            "phone_number": self.user_data["phone_number"],
+            "email": self.user_data["email"],    
             "password": self.user_data["password"]
         }, format="json")
+        print("Login response content:", response.content)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("token", response.data)
 
@@ -49,13 +49,14 @@ class UserAuthTests(APITestCase):
     def test_user_can_access_profile_with_token(self):
         self.client.post(self.register_url, self.user_data, format="json")
         login_response = self.client.post(self.login_url, {
-            "phone_number": self.user_data["phone_number"],
+            "email": self.user_data["email"],   
             "password": self.user_data["password"]
         }, format="json")
-        token = login_response.data["token"]
+        print("Login response content:", login_response.content)
+        token = login_response.data.get("token")
+        self.assertIsNotNone(token, "Token not found in login response")
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {token}")
         response = self.client.get(self.profile_url)
-
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["phone_number"], self.user_data["phone_number"])
         self.assertEqual(response.data["email"], self.user_data["email"])

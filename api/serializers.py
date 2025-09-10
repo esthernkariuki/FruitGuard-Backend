@@ -1,3 +1,4 @@
+
 from rest_framework import serializers
 from data_monitoring.models import DataMonitoring 
 from device.models import Device
