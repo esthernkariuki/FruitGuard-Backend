@@ -7,7 +7,6 @@ class DataMonitoringSerializer(serializers.ModelSerializer):
        model = DataMonitoring
        fields = '__all__' 
 
-
 class DeviceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Device
