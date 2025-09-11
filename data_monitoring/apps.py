@@ -10,13 +10,10 @@ def mqtt_thread():
 
     def on_connect(client, userdata, flags, rc):
         if rc == 0:
-            print("Connected successfully to MQTT broker")
             client.subscribe("esp32/alert")
-        else:
-            print(f"Failed to connect, return code {rc}")
 
     def on_message(client, userdata, msg):
-        print(f"MQTT message received on topic {msg.topic}: {msg.payload}")
+        pass
 
     client.on_connect = on_connect
     client.on_message = on_message
@@ -25,18 +22,18 @@ def mqtt_thread():
     try:
         client.tls_set()
         client.tls_insecure_set(False) 
-    except ssl.SSLError as e:
-        print(f"TLS setup error: {e}")
+    except ssl.SSLError:
+        pass
 
     while True:
         try:
             client.connect(settings.MQTT_SERVER, settings.MQTT_PORT, 60)
             client.loop_forever()
         except ssl.SSLError as e:
-            print(f"TLS handshake failed: {e}, retrying in 5 seconds...")
+            time.sleep(5)
         except Exception as e:
-            print(f"MQTT connection error: {e}, retrying in 5 seconds...")
-        time.sleep(5)
+            time.sleep(5)
+            continue
 
 class DataMonitoringConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
