@@ -12,25 +12,21 @@ def fetch_device_map():
         response.raise_for_status()
         devices = response.json()
         device_map = {d['device_identifier']: d['device_id'] for d in devices}
-        print("Device map loaded:", device_map)
-    except Exception as e:
-        print("Failed to fetch device map:", e)
+    except Exception:
+        pass
+        
 
 def on_connect(client, userdata, flags, rc):
-    print(f"Connected with reasonCode={rc}")
     client.subscribe(settings.MQTT_TOPIC)
-    print(f"Subscribed to topic {settings.MQTT_TOPIC}")
 
 def on_message(client, userdata, msg):
     try:
         payload = json.loads(msg.payload.decode())
-        print(f"Received message on {msg.topic}: {payload}")
 
         device_key = str(payload.get('device_id'))
         device_pk = device_map.get(device_key)
 
         if device_pk is None:
-            print(f"Unknown device {device_key}, skipping message.")
             return
 
         api_payload = {
@@ -38,12 +34,9 @@ def on_message(client, userdata, msg):
             "trap_fill_level": payload.get('distance', 0)
         }
         response = requests.post(settings.MQTT_API_URL, json=api_payload)
-        if response.status_code in [200, 201]:
-            print("Data successfully sent to API")
-        else:
-            print(f"Failed to send data: {response.status_code} - {response.text}")
-    except Exception as e:
-        print(f"Error parsing JSON or sending request: {e}")
+    except Exception:
+        pass
+        
 
 def mqtt_thread():
     client = mqtt.Client(client_id="backendClient")
