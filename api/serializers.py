@@ -4,6 +4,7 @@ from data_monitoring.models import DataMonitoring
 from device.models import Device
 from django.contrib.auth import get_user_model, authenticate
 from rest_framework.validators import UniqueValidator
+from django.db import models
 
 class DataMonitoringSerializer(serializers.ModelSerializer):
    class Meta:
@@ -13,11 +14,7 @@ class DataMonitoringSerializer(serializers.ModelSerializer):
 class DeviceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Device
-        fields = '__all__'
-
-
-
-
+        fields = ['device_id', 'device_identifier', 'status', 'created_at', 'user_id']
 
 User = get_user_model()
 

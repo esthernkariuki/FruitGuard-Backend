@@ -11,7 +11,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from .serializers import UserSerializer, LoginSerializer
-
+from rest_framework.decorators import api_view
 
 # Create your views here.
 class DataMonitoringViewSet(viewsets.ModelViewSet):
@@ -21,6 +21,12 @@ class DataMonitoringViewSet(viewsets.ModelViewSet):
 class DeviceViewSet(viewsets.ModelViewSet):
     queryset = Device.objects.all()
     serializer_class = DeviceSerializer
+
+@api_view(['GET'])
+def device_html_view(request):
+    devices = Device.objects.all()  
+    serializer = DeviceSerializer(devices, many=True)
+    return render(request, 'device.html', {'devices': serializer.data})
 
 User = get_user_model()
 
