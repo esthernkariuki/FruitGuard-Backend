@@ -48,7 +48,6 @@ def fetch_device_map():
 
 
 def on_connect(client, userdata, flags, rc, properties=None):
-    """Handle MQTT connection."""
     if rc == 0:
         topics = [
             ("esp32/alert", 1)
@@ -57,7 +56,6 @@ def on_connect(client, userdata, flags, rc, properties=None):
 
 
 def on_message(client, userdata, msg):
-    """Handle incoming MQTT messages."""
     from api.serializers import DataMonitoringSerializer
     try:
         payload_str = msg.payload.decode("utf-8", errors="ignore").strip()

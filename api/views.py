@@ -7,11 +7,12 @@ from .serializers import DeviceSerializer
 from django.contrib.auth import get_user_model, authenticate
 from rest_framework import generics, status, viewsets, permissions
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from .serializers import UserSerializer, LoginSerializer
 from rest_framework.decorators import api_view
+from rest_framework.parsers import MultiPartParser, FormParser
 
 # Create your views here.
 class DataMonitoringViewSet(viewsets.ModelViewSet):
@@ -34,6 +35,14 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        queryset = User.objects.all()
+        user_type = self.request.query_params.get('user_type')
+        if user_type:
+            queryset = queryset.filter(user_type=user_type)
+        return queryset
+
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -59,9 +68,19 @@ class LoginView(APIView):
 
       
 
-class ProfileView(generics.RetrieveAPIView):
+class ProfileView(generics.RetrieveUpdateAPIView):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser] 
 
     def get_object(self):
         return self.request.user
+    
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', True)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
