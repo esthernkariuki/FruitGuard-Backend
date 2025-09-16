@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'users',
     'device',
     'api',
@@ -73,6 +74,7 @@ REST_FRAMEWORK = {
 
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -83,6 +85,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'fruitguard.urls'
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 TEMPLATES = [
     {
@@ -167,6 +171,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'users.User'
 
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 # MQTT Configuration
 MQTT_BROKER = os.getenv('BROKER', '37a8480231f44d0f922df77b9e156dd8.s1.eu.hivemq.cloud')
@@ -179,7 +186,7 @@ MQTT_KEEPALIVE = 60
 SMS_USERNAME = os.getenv('SMS_USERNAME')
 SMS_PASSWORD = os.getenv('SMS_PASSWORD')
 SMS_API_SOURCE = os.getenv('SMS_API_SOURCE')
-TRAP_FILL_THRESHOLD = int(os.getenv('TRAP_FILL_THRESHOLD', 5))
+# TRAP_FILL_THRESHOLD = int(os.getenv('TRAP_FILL_THRESHOLD', 5))
 
 
 
