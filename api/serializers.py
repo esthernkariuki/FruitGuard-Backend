@@ -62,14 +62,18 @@ required=False,
 
     
     def validate(self, data):
-        user_type = self.context['request'].user.user_type
-        phone = data.get('phone_number', '')
+        user = self.context['request'].user
+        user_type = None
+        if user.is_authenticated:
+            user_type =getattr(user, 'user_type', None)
+            phone = data.get('phone_number', '')
 
         if user_type == 'farmer' and not phone:
             raise serializers.ValidationError({
                 'phone_number': 'Phone number is required for farmers.'
             })
         return data
+
 
     def create(self, validated_data):
         password = validated_data.pop('password', None)
