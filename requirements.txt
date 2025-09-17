@@ -39,3 +39,5 @@ setuptools==65.5.0
 tenacity==9.1.2
 typing-extensions==4.14.0
 urllib3==2.5.0
+drf-spectacular==0.28.0
+drf-spectacular-sidecar==2025.9.1
