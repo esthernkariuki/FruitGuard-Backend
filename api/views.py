@@ -29,8 +29,11 @@ from rest_framework import status, viewsets
 from .serializers import DataMonitoringSerializer
 from data_monitoring.models import DataMonitoring
 from api.sms import send_alert
+from drf_spectacular.utils import extend_schema
 
 class DataMonitoringViewSet(viewsets.ViewSet):
+    queryset = DataMonitoring.objects.all()
+    serializer_class = DataMonitoringSerializer
     def list(self, request):
         queryset = DataMonitoring.objects.all()
         serializer = DataMonitoringSerializer(queryset, many=True)
@@ -84,6 +87,7 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
 
+@extend_schema(request=LoginSerializer, responses={200: LoginSerializer})
 class LoginView(APIView):
     permission_classes = [AllowAny]
 
