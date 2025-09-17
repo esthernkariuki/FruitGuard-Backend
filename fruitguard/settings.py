@@ -38,7 +38,7 @@ SECRET_KEY = 'django-insecure-efs89bla=wix!e3o6&357*--bik3dz7w4#xe93pze3wh=5xsqx
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+ALLOWED_HOSTS = ['.herokuapp.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -57,6 +57,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'data_monitoring.apps.DataMonitoringConfig',
+    'drf_spectacular',
+    'drf_spectacular_sidecar',
 
 ]
 
@@ -70,12 +72,14 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -102,6 +106,13 @@ TEMPLATES = [
         },
     },
 ]
+
+SPECTACULAR_SETTINGS = {
+    'SWAGGER_UI_DIST': 'SIDECAR',  
+    'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
+    'REDOC_DIST': 'SIDECAR',
+
+}
 
 WSGI_APPLICATION = 'fruitguard.wsgi.application'
 
@@ -162,7 +173,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -186,7 +205,7 @@ MQTT_KEEPALIVE = 60
 SMS_USERNAME = os.getenv('SMS_USERNAME')
 SMS_PASSWORD = os.getenv('SMS_PASSWORD')
 SMS_API_SOURCE = os.getenv('SMS_API_SOURCE')
-# TRAP_FILL_THRESHOLD = int(os.getenv('TRAP_FILL_THRESHOLD', 5))
+TRAP_FILL_THRESHOLD = int(os.getenv('TRAP_FILL_THRESHOLD', 5))
 
 
 

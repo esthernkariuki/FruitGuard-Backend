@@ -56,7 +56,6 @@ def on_connect(client, userdata, flags, rc, properties=None):
 
 
 def on_message(client, userdata, msg):
-    from api.serializers import DataMonitoringSerializer
     try:
         payload_str = msg.payload.decode("utf-8", errors="ignore").strip()
         payload = json.loads(payload_str)
@@ -70,17 +69,15 @@ def on_message(client, userdata, msg):
             "trap_fill_level": payload.get('distance', 0) if msg.topic == "esp32/alert" else 0,
             "metadata": payload
         }
-        serializer = DataMonitoringSerializer(data=api_payload)
-        if serializer.is_valid():
-            serializer.save()
-            if msg.topic == "esp32/alert" and api_payload["trap_fill_level"] > 0:
-                from api.sms import send_alert
-                send_alert(device_pk, api_payload['trap_fill_level'])
+    
         response = requests.post(API_URL.rstrip('/') + '/data_monitoring/', json=api_payload)
     except json.JSONDecodeError:
         pass
     except Exception:
         pass
+
+
+
 
 
 class MqttThread(threading.Thread):

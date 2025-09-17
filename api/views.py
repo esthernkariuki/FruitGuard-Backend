@@ -13,11 +13,49 @@ from rest_framework.authtoken.models import Token
 from .serializers import UserSerializer, LoginSerializer
 from rest_framework.decorators import api_view
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from api.serializers import DataMonitoringSerializer
+from api.sms import send_alert
+from django.shortcuts import get_object_or_404
+from rest_framework.response import Response
+from rest_framework import status, viewsets
+from .serializers import DataMonitoringSerializer
+from data_monitoring.models import DataMonitoring
+from api.sms import send_alert
+from django.shortcuts import get_object_or_404
+from rest_framework.response import Response
+from rest_framework import status, viewsets
+from .serializers import DataMonitoringSerializer
+from data_monitoring.models import DataMonitoring
+from api.sms import send_alert
+from drf_spectacular.utils import extend_schema
 
-# Create your views here.
-class DataMonitoringViewSet(viewsets.ModelViewSet):
-   queryset = DataMonitoring.objects.all()
-   serializer_class = DataMonitoringSerializer
+class DataMonitoringViewSet(viewsets.ViewSet):
+    queryset = DataMonitoring.objects.all()
+    serializer_class = DataMonitoringSerializer
+    def list(self, request):
+        queryset = DataMonitoring.objects.all()
+        serializer = DataMonitoringSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None):
+        instance = get_object_or_404(DataMonitoring, pk=pk)
+        serializer = DataMonitoringSerializer(instance)
+        return Response(serializer.data)
+
+    def create(self, request):
+        serializer = DataMonitoringSerializer(data=request.data)
+        if serializer.is_valid():
+            instance = serializer.save()
+            trap_fill_level = request.data.get("trap_fill_level", 0)
+            topic = request.data.get("topic", "")
+            if topic == "esp32/alert" and trap_fill_level > 0:
+                send_alert(instance.device.pk, trap_fill_level)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class DeviceViewSet(viewsets.ModelViewSet):
     queryset = Device.objects.all()
@@ -49,6 +87,7 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
 
+@extend_schema(request=LoginSerializer, responses={200: LoginSerializer})
 class LoginView(APIView):
     permission_classes = [AllowAny]
 

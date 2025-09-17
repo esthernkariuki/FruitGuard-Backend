@@ -44,11 +44,11 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=50, blank=True)
     last_name = models.CharField(max_length=50, blank=True)
     phone_number = models.CharField(max_length=50,unique=True)
-    number_of_traps=models.CharField(blank=True,null=True)
+    number_of_traps=models.CharField(max_length=100,blank=True,null=True)
     email = models.EmailField('email address', blank=True, null=True, unique=True)
     profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
     user_type = models.CharField(max_length=50, choices=USER_TYPE_CHOICES, default='farmer')
-    location=models.CharField(blank=True,null=True)
+    location=models.CharField(max_length=10,blank=True,null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     objects = UserManager()
